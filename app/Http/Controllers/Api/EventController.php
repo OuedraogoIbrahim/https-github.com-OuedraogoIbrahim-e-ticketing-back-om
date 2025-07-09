@@ -7,6 +7,7 @@ use App\Models\Event;
 use App\Models\EventType;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class EventController extends Controller
 {
@@ -83,12 +84,4 @@ class EventController extends Controller
         return response()->json(null, 204);
     }
 
-    /**
-     * Get all event types.
-     */
-    public function getEventTypes()
-    {
-        $types = EventType::all();
-        return response()->json($types);
-    }
 }

@@ -2,8 +2,6 @@
 
 use App\Http\Controllers\Api\Authentification;
 use App\Http\Controllers\Api\ClientDashboardController;
-use App\Http\Controllers\Api\DashboardController;
-use App\Http\Controllers\Api\EventController;
 use App\Http\Controllers\Api\OrganizerEventController;
 use App\Http\Controllers\Api\PaymentController;
 use App\Http\Controllers\Api\PublicEventController;
@@ -15,10 +13,12 @@ Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
+
 Route::middleware('auth:sanctum')->group(function () {
     //Gestion events cote organisateur
     Route::apiResource('events', OrganizerEventController::class)->except('update');
     Route::post('events/{event}', [OrganizerEventController::class, 'update'])->name('events.update');
+    Route::get('/history/{event}/tickets', [OrganizerEventController::class, 'history']);
 
     Route::get('client/events', [ClientDashboardController::class, 'index']);
 

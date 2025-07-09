@@ -141,6 +141,22 @@ class OrganizerEventController extends Controller
         return response()->json(['success' => true, 'message' => 'Événement supprimé avec succès.']);
     }
 
+    /**
+     * Get event history.
+     */
+    public function history(Event $event)
+    {
+        // Retourne uniquement l'événement demandé avec les counts nécessaires
+        return response()->json([
+            'event' => $event,
+            'stats' => [
+                'total_tickets' => $event->tickets()->count(),
+                'transferred_tickets' => $event->ticket_transfers()->count(),
+                'used_tickets' => $event->tickets()->whereNotNull('date_utilisation')->count(),
+            ]
+        ]);
+    }
+
     private function isOrganizer(): bool
     {
         return Auth::user()->role === 'organisateur';
