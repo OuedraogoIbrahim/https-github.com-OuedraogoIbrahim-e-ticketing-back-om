@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Event;
+use App\Models\EventType;
 use App\Models\Ticket;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -17,9 +18,7 @@ class OrganizerEventController extends Controller
      */
     public function index()
     {
-        if (!$this->isOrganizer()) {
-            return response()->json(['error' => 'Unauthorized'], 401);
-        }
+
         $events = Event::query()
             ->where('organizer_id', Auth::user()->organizer->id)
             ->with('type')
@@ -35,6 +34,7 @@ class OrganizerEventController extends Controller
      */
     public function store(Request $request)
     {
+        $idTypeAutre = EventType::query()->where('nom', 'autre')->first();
         $validated = $request->validate([
             'titre' => 'required|string|max:255',
             'nombre_tickets' => 'required|numeric|min:1',
@@ -48,6 +48,10 @@ class OrganizerEventController extends Controller
             'heure_debut' => 'required|string',
             'heure_fin' => 'required|string',
         ]);
+
+        if ($validated['event_type_id'] == $idTypeAutre->id) {
+            $validated['type_autre'] = $request->type_autre;
+        }
 
         if ($request->hasFile('photo')) {
             $validated['photo'] = $request->file('photo')->store('events/' . Auth::user()->id, 'public');
@@ -90,7 +94,7 @@ class OrganizerEventController extends Controller
      */
     public function update(Request $request, $id)
     {
-
+        $idTypeAutre = EventType::query()->where('nom', 'autre')->first();
         $event = Event::where('organizer_id', Auth::user()->organizer->id)->findOrFail($id);
 
         $validated = $request->validate([
@@ -108,6 +112,11 @@ class OrganizerEventController extends Controller
         ]);
 
 
+        if ($validated['event_type_id'] == $idTypeAutre->id) {
+            $validated['type_autre'] = $request->type_autre;
+        } else {
+            $validated['type_autre']  = '';
+        }
         //Logique pour upload
         if ($request->hasFile('photo')) {
             // Supprimer l'ancienne photo si elle existe
@@ -155,10 +164,5 @@ class OrganizerEventController extends Controller
                 'used_tickets' => $event->tickets()->whereNotNull('date_utilisation')->count(),
             ]
         ]);
-    }
-
-    private function isOrganizer(): bool
-    {
-        return Auth::user()->role === 'organisateur';
     }
 }

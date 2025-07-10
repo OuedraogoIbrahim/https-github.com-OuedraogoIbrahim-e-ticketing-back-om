@@ -43,13 +43,29 @@ class ClientDashboardController extends Controller
             $q->where('client_id', $client->id)
                 ->whereNull('date_utilisation');
         })
-            ->where('date_debut', '>', Carbon::today())
+            ->where('date_debut', '>=', Carbon::today())
             ->with(['tickets' => fn($q) => $q->where('client_id', $client->id)->whereNull('date_utilisation')])
             ->paginate(6);
 
-        return response()->json($events);
+        return response()->json([
+            'data' => $events->items(),
+            'links' => [
+                'first' => $events->url(1),
+                'last' => $events->url($events->lastPage()),
+                'prev' => $events->previousPageUrl(),
+                'next' => $events->nextPageUrl(),
+            ],
+            'meta' => [
+                'current_page' => $events->currentPage(),
+                'from' => $events->firstItem(),
+                'last_page' => $events->lastPage(),
+                'path' => $events->path(),
+                'per_page' => $events->perPage(),
+                'to' => $events->lastItem(),
+                'total' => $events->total(),
+            ]
+        ]);
     }
-
     /**
      * Transfer tickets to another client.
      */

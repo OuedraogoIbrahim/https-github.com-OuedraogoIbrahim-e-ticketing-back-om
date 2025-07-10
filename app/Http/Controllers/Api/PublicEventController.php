@@ -18,19 +18,78 @@ class PublicEventController extends Controller
      */
     public function index(Request $request)
     {
-        $events = Event::query()
+        $query = Event::query()
             ->where('date_debut', '>=', now())
-            ->with('type')
-            ->orderBy('date_debut')
-            ->get()
-            ->map(function ($event) {
-                if ($event->photo) {
-                    $event->photo = Storage::url($event->photo);
-                }
-                return $event;
-            });
+            ->with('type');
 
-        return response()->json($events);
+        // Filtres
+        if ($request->type) {
+            $query->where('event_type_id', $request->type);
+        }
+
+        if ($request->ville) {
+            $query->where('ville', $request->ville);
+        }
+
+        if ($request->date) {
+            $today = now();
+            switch ($request->date) {
+                case 'today':
+                    $query->whereDate('date_debut', $today);
+                    break;
+                case 'week':
+                    $query->whereBetween('date_debut', [$today, $today->copy()->addWeek()]);
+                    break;
+                case 'month':
+                    $query->whereBetween('date_debut', [$today, $today->copy()->addMonth()]);
+                    break;
+            }
+        }
+
+        if ($request->search) {
+            $query->where('titre', 'like', '%' . $request->search . '%');
+        }
+
+        // Pagination
+        $perPage = $request->per_page ?? 10;
+        $events = $query->paginate($perPage);
+
+        // Transformation des données avec gestion des photos
+        $transformedData = $events->getCollection()->map(function ($event) {
+            return [
+                'id' => $event->id,
+                'titre' => $event->titre,
+                'description' => $event->description,
+                'date_debut' => $event->date_debut,
+                'date_fin' => $event->date_fin,
+                'heure_debut' => $event->heure_debut,
+                'heure_fin' => $event->heure_fin,
+                'ville' => $event->ville,
+                'prix' => $event->prix,
+                'photo' => $event->photo ? Storage::url($event->photo) : null,
+                'type' => [
+                    'id' => $event->type->id,
+                    'nom' => $event->type->nom
+                ],
+                // Ajoutez d'autres champs si nécessaire
+            ];
+        });
+
+        return response()->json([
+            'data' => $transformedData,
+            'meta' => [
+                'current_page' => $events->currentPage(),
+                'last_page' => $events->lastPage(),
+                'per_page' => $events->perPage(),
+                'total' => $events->total(),
+            ],
+            'links' => [
+                'first' => $events->url(1),
+                'last' => $events->url($events->lastPage()),
+                'prev' => $events->previousPageUrl(),
+                'next' => $events->nextPageUrl(),
+            ]
+        ]);
     }
 
     /**

@@ -71,11 +71,7 @@
 
         @foreach ($tickets as $index => $ticket)
             @php
-                $qrcode = base64_encode(
-                    QrCode::format('svg')
-                        ->size(200)
-                        ->generate(url('/tickets/verify/' . $ticket->token)),
-                );
+                $qrcode = base64_encode(QrCode::format('svg')->size(200)->generate($ticket->token));
             @endphp
 
             <div class="ticket">

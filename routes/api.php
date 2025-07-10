@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\ClientDashboardController;
 use App\Http\Controllers\Api\OrganizerEventController;
 use App\Http\Controllers\Api\PaymentController;
 use App\Http\Controllers\Api\PublicEventController;
+use App\Http\Controllers\VerifyTicketController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -31,15 +32,17 @@ Route::middleware('auth:sanctum')->group(function () {
     //paiement
     Route::post('payment/{eventId}/process', [PaymentController::class, 'processPayment']);
 
-    Route::get('test', function () {
-        return response()->json(['user' => Auth::user()]);
-    });
+    //Verification d'un ticket
+    // Route::get('verify-ticket/{token}', VerifyTicketController::class);
 
     //Deconnexion 
     Route::post('logout', [Authentification::class, 'deconnexion'])->name('logout');
 });
+Route::get('verify-ticket/{token}', VerifyTicketController::class);
 
-Route::post('/login', [App\Http\Controllers\Api\Authentification::class, 'login'])->name('login');
+Route::post('/login/client', [App\Http\Controllers\Api\Authentification::class, 'loginClient']);
+Route::post('/login/organisateur', [App\Http\Controllers\Api\Authentification::class, 'loginOrganisateur']);
+
 Route::post('/register', [App\Http\Controllers\Api\Authentification::class, 'register'])->name('register');
 
 //Recuperation des events pour le public

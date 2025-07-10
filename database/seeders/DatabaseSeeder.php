@@ -63,6 +63,10 @@ class DatabaseSeeder extends Seeder
     $eventType2->nom = 'concert';
     $eventType2->save();
 
+    $eventType3 = new EventType();
+    $eventType3->nom = 'autre';
+    $eventType3->save();
+
     for ($i = 1; $i <= 10; $i++) {
       $event = new Event();
       $event->titre = 'Événement ' . $i;

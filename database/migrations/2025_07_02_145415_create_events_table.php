@@ -23,6 +23,7 @@ return new class extends Migration
             $table->string('heure_debut');
             $table->string('heure_fin');
             $table->string('nombre_tickets');
+            $table->string('type_autre')->nullable();
             $table->foreignId('organizer_id')->constrained()->onUpdate('cascade')->onDelete('cascade');
             $table->foreignId('event_type_id')->constrained("event_types")->onUpdate('cascade')->onDelete('cascade');
             $table->timestamps();

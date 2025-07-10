@@ -24,6 +24,7 @@ class Event extends Model
         'organizer_id',
         'event_type_id',
         'nombre_tickets',
+        'type_autre'
     ];
 
     public function tickets(): HasMany
