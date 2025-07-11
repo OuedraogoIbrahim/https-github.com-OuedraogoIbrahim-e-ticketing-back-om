@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\OrganizerEventController;
 use App\Http\Controllers\Api\PaymentController;
 use App\Http\Controllers\Api\PublicEventController;
 use App\Http\Controllers\DashboardAgentController;
+use App\Http\Controllers\OrganisateurDashboardController;
 use App\Http\Controllers\VerifyTicketController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -30,6 +31,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('client/tickets/{ticketId}/transfer', [ClientDashboardController::class, 'transferTicket']);
     Route::get('client/events/{eventId}/download-ticket', [ClientDashboardController::class, 'downloadTicket']);
     Route::get('client/stats', [ClientDashboardController::class, 'stats']);
+
+    //Dashboard organisateur
+    Route::get('dashboard/organisateur', OrganisateurDashboardController::class);
 
     //paiement
     Route::post('payment/{eventId}/process', [PaymentController::class, 'processPayment']);
