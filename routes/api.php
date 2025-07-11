@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AgentController;
 use App\Http\Controllers\Api\Authentification;
 use App\Http\Controllers\Api\ClientDashboardController;
 use App\Http\Controllers\Api\OrganizerEventController;
@@ -35,13 +36,19 @@ Route::middleware('auth:sanctum')->group(function () {
     //Verification d'un ticket
     // Route::get('verify-ticket/{token}', VerifyTicketController::class);
 
+    //Gestiion des agents
+    Route::apiResource('agents', AgentController::class);
+
     //Deconnexion 
     Route::post('logout', [Authentification::class, 'deconnexion'])->name('logout');
 });
+
 Route::get('verify-ticket/{token}', VerifyTicketController::class);
 
 Route::post('/login/client', [App\Http\Controllers\Api\Authentification::class, 'loginClient']);
 Route::post('/login/organisateur', [App\Http\Controllers\Api\Authentification::class, 'loginOrganisateur']);
+Route::post('/login/agent', [App\Http\Controllers\Api\Authentification::class, 'loginAgent']);
+
 
 Route::post('/register', [App\Http\Controllers\Api\Authentification::class, 'register'])->name('register');
 

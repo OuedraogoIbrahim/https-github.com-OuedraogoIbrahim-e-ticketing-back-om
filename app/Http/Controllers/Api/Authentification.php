@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Agent;
 use App\Models\Client;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -108,6 +109,27 @@ class Authentification extends Controller
             'user' => $user,
             'token' => $token
         ]);
+    }
+
+    public function loginAgent(Request $request)
+    {
+        $validated = $request->validate([
+            'nom' => 'required|string',
+            'password' => 'required|string',
+        ]);
+
+        $agent = Agent::where('nom', $validated['nom'])->first();
+
+        if (!$agent || !Hash::check($validated['password'], $agent->password)) {
+            return response()->json(['error' => 'Identifiants invalides'], 401);
+        }
+
+        $token = $agent->createToken('agent-token')->plainTextToken;
+
+        return response()->json([
+            'agent' => $agent,
+            'token' => $token,
+        ], 200);
     }
 
     public function deconnexion(Request $request)
