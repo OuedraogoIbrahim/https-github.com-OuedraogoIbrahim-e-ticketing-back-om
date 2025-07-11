@@ -8,6 +8,7 @@ use App\Models\EventType;
 use App\Models\Ticket;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class PublicEventController extends Controller
@@ -18,8 +19,9 @@ class PublicEventController extends Controller
      */
     public function index(Request $request)
     {
+        $today = now()->startOfDay(); // Modifié ici
         $query = Event::query()
-            ->where('date_debut', '>=', now())
+            ->where('date_debut', '>=', now()->toDateString())
             ->with('type');
 
         // Filtres
@@ -32,16 +34,16 @@ class PublicEventController extends Controller
         }
 
         if ($request->date) {
-            $today = now();
+            $today = now()->startOfDay(); // Modifié ici
             switch ($request->date) {
                 case 'today':
-                    $query->whereDate('date_debut', $today);
+                    $query->whereDate('date_debut', $today->toDateString()); // Modifié ici
                     break;
                 case 'week':
-                    $query->whereBetween('date_debut', [$today, $today->copy()->addWeek()]);
+                    $query->whereBetween('date_debut', [$today, $today->copy()->endOfWeek()]);
                     break;
                 case 'month':
-                    $query->whereBetween('date_debut', [$today, $today->copy()->addMonth()]);
+                    $query->whereBetween('date_debut', [$today, $today->copy()->endOfMonth()]);
                     break;
             }
         }
@@ -71,7 +73,6 @@ class PublicEventController extends Controller
                     'id' => $event->type->id,
                     'nom' => $event->type->nom
                 ],
-                // Ajoutez d'autres champs si nécessaire
             ];
         });
 

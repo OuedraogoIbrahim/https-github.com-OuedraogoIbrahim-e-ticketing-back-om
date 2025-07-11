@@ -15,9 +15,9 @@ return new class extends Migration
             $table->id();
             $table->foreignId('client_id')->constrained('clients')->onUpdate('cascade')->onDelete('cascade');
             $table->foreignId('event_id')->constrained()->onUpdate('cascade')->onDelete('cascade');
-            $table->string('date_achat');
+            $table->date('date_achat');
             $table->string('token')->unique(); // Ajout pour le QR code
-            $table->string('date_utilisation')->nullable();
+            $table->date('date_utilisation')->nullable();
             $table->timestamps();
         });
     }

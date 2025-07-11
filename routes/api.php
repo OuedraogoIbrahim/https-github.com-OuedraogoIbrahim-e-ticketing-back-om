@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\ClientDashboardController;
 use App\Http\Controllers\Api\OrganizerEventController;
 use App\Http\Controllers\Api\PaymentController;
 use App\Http\Controllers\Api\PublicEventController;
+use App\Http\Controllers\DashboardAgentController;
 use App\Http\Controllers\VerifyTicketController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -34,16 +35,18 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('payment/{eventId}/process', [PaymentController::class, 'processPayment']);
 
     //Verification d'un ticket
-    // Route::get('verify-ticket/{token}', VerifyTicketController::class);
+    Route::get('verify-ticket/{token}', VerifyTicketController::class);
 
     //Gestiion des agents
     Route::apiResource('agents', AgentController::class);
+
+    //Nombre de tickets scanner pour un event
+    Route::get('tickets/scan', DashboardAgentController::class);
 
     //Deconnexion 
     Route::post('logout', [Authentification::class, 'deconnexion'])->name('logout');
 });
 
-Route::get('verify-ticket/{token}', VerifyTicketController::class);
 
 Route::post('/login/client', [App\Http\Controllers\Api\Authentification::class, 'loginClient']);
 Route::post('/login/organisateur', [App\Http\Controllers\Api\Authentification::class, 'loginOrganisateur']);

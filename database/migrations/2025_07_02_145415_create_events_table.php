@@ -16,8 +16,8 @@ return new class extends Migration
             $table->string('titre');
             $table->string('description')->nullable();
             $table->string('photo')->nullable();
-            $table->string("date_debut");
-            $table->string("date_fin");
+            $table->date("date_debut");
+            $table->date("date_fin");
             $table->string('ville');
             $table->integer('prix');
             $table->string('heure_debut');

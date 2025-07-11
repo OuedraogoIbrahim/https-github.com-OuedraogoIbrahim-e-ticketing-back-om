@@ -72,8 +72,8 @@ class DatabaseSeeder extends Seeder
       $event->titre = 'Événement ' . $i;
       $event->description = 'Description de l’événement ' . $i;
       $event->photo = null;
-      $event->date_debut = Carbon::now()->addDays($i)->format('Y-m-d');
-      $event->date_fin = Carbon::now()->addDays($i + 1)->format('Y-m-d');
+      $event->date_debut = Carbon::now()->addDays($i);
+      $event->date_fin = Carbon::now()->addDays($i + 1);
       $event->ville = 'Ville ' . $i;
       $event->prix = rand(5000, 20000);
       $event->heure_debut = '18:00';
@@ -89,7 +89,7 @@ class DatabaseSeeder extends Seeder
         $ticket = new Ticket();
         $ticket->client_id = $client->id;
         $ticket->event_id = $event->id;
-        $ticket->date_achat = Carbon::now()->format('Y-m-d');
+        $ticket->date_achat = Carbon::now();
         $ticket->token = Str::uuid(); // Générer un token unique
         $ticket->date_utilisation = null; // Non utilisé
         $ticket->save();

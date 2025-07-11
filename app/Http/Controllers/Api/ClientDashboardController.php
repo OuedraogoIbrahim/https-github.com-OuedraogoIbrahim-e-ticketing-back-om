@@ -10,6 +10,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class ClientDashboardController extends Controller
@@ -43,7 +44,7 @@ class ClientDashboardController extends Controller
             $q->where('client_id', $client->id)
                 ->whereNull('date_utilisation');
         })
-            ->where('date_debut', '>=', Carbon::today())
+            ->where('date_debut', '>=', now()->toDateString())
             ->with(['tickets' => fn($q) => $q->where('client_id', $client->id)->whereNull('date_utilisation')])
             ->paginate(6);
 
